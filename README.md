@@ -6,7 +6,7 @@ Gitfinder allows you to use different filters to locate your lost repository and
 
 More features will be added as I further develop the program.
 
-# How to install gitfinder
+## How to install Gitfinder
 
 Gitfinder has only been tested on Linux and Mac setups so far. To use, clone the repository and then
 
@@ -16,7 +16,7 @@ cp gitfinder.sh /usr/local/bin/gitfinder
 
 Once this is done, you can run gitfinder from anywhwere on the terminal
 
-# How to use gitfinder
+## How to use Gitfinder
 
 You can run `gitfinder` directly without any flags to find all the git repositories that are under the current directory
 (gitfinder will recursively go through all the directories under the current directory to find the repositories). You
