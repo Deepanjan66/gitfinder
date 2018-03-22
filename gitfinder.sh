@@ -52,7 +52,7 @@ do
    then
       cd $dirname;
       show_errors "Encountered an error while looking at ${repos[$i]}";
-      all_logs=`git log --pretty=format:"%s"`;
+      all_logs=`git log --pretty=format:"%s" 2> /dev/null`;
       show_errors "Encountered an error while looking at ${repos[$i]}";
       all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /dev/null`;
       show_errors "Encountered an error while looking at ${repos[$i]}";
@@ -67,12 +67,14 @@ do
    fi
 done
 
+echo "===================== RESULTS ========================"
 for ((i=0; i<${#results[@]}; i++ ));
 do
    dirname="${results[$i]}";
    if [[ $folder -eq 1 ]];
    then
-      dirname=`echo "$dirname" | sed 's/\.git//g' | grep -o "[^\/]+"`
+      dirname=`echo "$dirname" | sed 's/\/\.git//g' | grep -o "[^/]*$"`
    fi
    echo "$dirname";
 done
+echo "======================================================"
