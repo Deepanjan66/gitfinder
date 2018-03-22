@@ -61,10 +61,10 @@ do
       then
          results+=(${repos[i]}); 
       fi
+      cd $curr_dir;
    else
       results+=(${repos[i]}); 
    fi
-   cd $curr_dir;
 done
 
 for ((i=0; i<${#results[@]}; i++ ));
