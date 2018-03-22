@@ -1,6 +1,6 @@
 # Gitfinder
 
-Gitfinder is a commandline utility that will allow you to look for and find git repositories on your local machine. This
+Gitfinder is a commandline utility that will allow you to search for git repositories on your local machine. This
 is particularly useful if you opened a git repository a long time ago and forgot where you cloned it the last time.
 Gitfinder allows you to use different filters to locate your lost repository and start working on them.
 
