@@ -1,6 +1,6 @@
 # Gitfinder
 
-Gitfinder is a commandline utility that will allow you to search for git repositories on your local machine. This
+Gitfinder is a command-line utility that will allow you to search for git repositories on your local machine. This
 is particularly useful if you opened a git repository a long time ago and forgot where you cloned it the last time.
 Gitfinder allows you to use different filters to locate your lost repository and start working on them.
 
@@ -14,7 +14,9 @@ Gitfinder has only been tested on Linux and Mac setups so far. To use, clone the
 cp gitfinder.sh /usr/local/bin/gitfinder
 ```
 
-Once this is done, you can run gitfinder from anywhwere on the terminal
+Once this is done, you can run gitfinder from anywhwere on the terminal. 
+
+Note: On linux, make sure `/bin/sh` points towards `bash` and not `dash`.
 
 ## How to use Gitfinder
 
