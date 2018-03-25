@@ -32,6 +32,8 @@ Usage: gitfinder <flags> <values>
 Flags:
    -h : Help. This will show all the available commands
    -f : Show results by folder name
-   -c  "string" : Search repositories by string in commit messages
+   -c "string" : Search repositories by string in commit messages
+   -s "%Year-%Month-%Day" : Finds repositories that have had activity after that date
+      "XXXX-XX-XX" format 
 ```
 
