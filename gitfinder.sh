@@ -18,7 +18,7 @@ check_commit(){
    if [[ $commit ]];
    then
       show_errors "Encountered an error while looking at ${repos[$i]}";
-      all_logs=`git log --pretty=format:"%s" 2> /dev/null`;
+      all_logs=`git log --pretty=format:"%s" 2> /tmp/error`;
       show_errors "Encountered an error while looking at ${repos[$i]}";
       all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /dev/null`;
       show_errors "Encountered an error while looking at ${repos[$i]}";
@@ -47,6 +47,15 @@ check_start_date(){
 
 
 compare_dates() {
+   if [ -z "$1" ];
+   then
+      ret_val=-2;
+      return;
+   elif [ -z "$2" ];
+   then
+      ret_val=-2;
+      return;
+   fi
    date1_year=`echo $1 | cut -d"-" -f1`;
    date1_month=`echo $1 | cut -d"-" -f2`;
    date1_day=`echo $1 | cut -d"-" -f3`;
@@ -155,7 +164,6 @@ do
    # If commit flag is provided, look for required commit message
    # from the commit log
    check_commit;
-   echo $?;
    add=`expr $add \* $ret_val`;
 
    check_start_date;
