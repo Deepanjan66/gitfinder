@@ -160,8 +160,8 @@ do
       echo "   -h : This will show all the available commands"
       echo "   -f : Show results by folder name"
       echo "   -c \"string\" : Search repositories by string in commit messages"
-      echo "   -e \"%year-%month-%day\" : Search for repositories that were edited"
-      echo "       after provided date"
+      echo "   -s \"%Year-%Month-%Day\" : Finds repositories with first commit before or on that day"
+      echo "   -e \"%Year-%Month-%Day\" : Finds repositories with last commit after or on that day"
       exit
    fi
 done
