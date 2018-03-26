@@ -6,30 +6,37 @@ commit='';
 start_date='';
 end_date='';
 folder=0;
-
-
-start_year=''
-start_month=''
-start_day=''
+report=0;
 
 ret_val=0;
+echo '' > /tmp/gitfinder_error
 
 check_commit(){
    if [[ $commit ]];
    then
-      show_errors "Encountered an error while looking at ${repos[$i]}";
-      all_logs=`git log --pretty=format:"%s" 2> /tmp/error`;
-      show_errors "Encountered an error while looking at ${repos[$i]}";
-      all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /dev/null`;
-      show_errors "Encountered an error while looking at ${repos[$i]}";
+      all_logs=`git log --pretty=format:"%s" 2> /tmp/gitfinder_error`;
+      show_errors "Error at ${repos[$i]}";
+      all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /tmp/gitfinder_error`;
+      show_errors "Error at ${repos[$i]}";
    
       if echo "$all_logs" | grep -Eiq $commit ;
       then
          ret_val=1;
          #results+=(${repos[i]}); 
-      else:
+      else
          ret_val=0;
       fi
+   else
+      ret_val=1;
+   fi
+}
+
+check_end_date(){
+   if [[ $end_date ]];
+   then
+      repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | head -n 1 | cut -d" " -f1`;
+      show_errors "Error at ${repos[$i]}";
+      compare_dates $repo_last_edit_date $end_date;
    else
       ret_val=1;
    fi
@@ -38,13 +45,13 @@ check_commit(){
 check_start_date(){
    if [[ $start_date ]];
    then
-      repo_last_edit_date=`git log --pretty=format:"%ai" | head -n 1 | cut -d" " -f1`;
-      compare_dates $repo_last_edit_date $start_date;
+      repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | tail -n 1 | cut -d" " -f1`;
+      show_errors "Error at ${repos[$i]}";
+      compare_dates $start_date $repo_last_edit_date;
    else
       ret_val=1;
    fi
 }
-
 
 compare_dates() {
    if [ -z "$1" ];
@@ -97,10 +104,19 @@ curr_dir=`pwd`;
 
 # Function used for printing error statements
 show_errors() {
+
    if [ $? -ne 0 ];
    then
       echo "$1"; 
       continue;
+   else
+      err=`cat /tmp/gitfinder_error`;
+      if [ ! -z "$err" ];
+      then
+         echo "$1 : $err";
+         echo '' > /tmp/gitfinder_error;
+         continue;
+      fi
    fi
 }
 
@@ -117,26 +133,34 @@ do
       commit="$2";
       shift 2;
    # Show -h output for any other flags provided
+   elif [ "$1" = "-e" ]
+   then
+      end_date="$2";
+
+      # Assign values to start date types
+      end_year=`echo $end_date | cut -d"-" -f1`;
+      end_month=`echo $end_date | cut -d"-" -f2`;
+      end_day=`echo $end_date | cut -d"-" -f3`;
+      shift 2;
    elif [ "$1" = "-s" ]
    then
       start_date="$2";
 
-      # Assign values to start date types
-      start_year=`echo $start_date | cut -d"-" -f1`;
-      start_month=`echo $start_date | cut -d"-" -f2`;
-      start_day=`echo $start_date | cut -d"-" -f3`;
+      start_year=`echo $start_date | cut -d"-" -f1`
+      start_month=`echo $start_date | cut -d"-" -f2`
+      start_day=`echo $start_date | cut -d"-" -f3`
+
       shift 2;
-   elif [ "$1" = "-e" ]
+   elif [ "$1" = "--report" ];
    then
-      end_date="$2";
-      shift 2;
+      report=1;
    else
       echo "Usage: gitfinder <flags> <values>"
       echo "Flags:"
       echo "   -h : This will show all the available commands"
       echo "   -f : Show results by folder name"
-      echo "   -c  \"string\" : Search repositories by string in commit messages"
-      echo "   -s \"%year-%month-%day\" : Search for repositories that were edited"
+      echo "   -c \"string\" : Search repositories by string in commit messages"
+      echo "   -e \"%year-%month-%day\" : Search for repositories that were edited"
       echo "       after provided date"
       exit
    fi
@@ -152,8 +176,8 @@ for ((i=0; i<${#repos[@]}; i++ ));
 do
    # Remove the .git at the end
    dirname="${repos[$i]}";
-   dirname=`echo "$dirname" | sed s/\.git$//g 2> /dev/null`;
-   show_errors "Encountered an error while looking at ${repos[$i]}";
+   dirname=`echo "$dirname" | sed s/\.git$//g 2> /tmp/gitfinder_error`;
+   show_errors "Error at ${repos[$i]}";
    # If dirname is not a directory, move to the next repository dir
    if [ ! -d "$dirname" ];
    then
@@ -165,6 +189,14 @@ do
    # from the commit log
    check_commit;
    add=`expr $add \* $ret_val`;
+
+   check_end_date;
+   if [[ $ret_val -lt 0 ]];
+   then
+      add=`expr $add \* 0`;
+   else
+      add=`expr $add \* 1`;
+   fi
 
    check_start_date;
    if [[ $ret_val -lt 0 ]];
