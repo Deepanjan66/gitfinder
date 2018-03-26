@@ -37,7 +37,7 @@ Flags:
    -e "%Year-%Month-%Day" : Finds repositories with last commit after or on that day
 ```
 
-## Example Usage
+## Example usage
 
 To find repositories that were edited after a certain date:
 
