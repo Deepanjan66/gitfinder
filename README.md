@@ -33,7 +33,32 @@ Flags:
    -h : Help. This will show all the available commands
    -f : Show results by folder name
    -c "string" : Search repositories by string in commit messages
-   -s "%Year-%Month-%Day" : Finds repositories that have had activity after that date
-      "XXXX-XX-XX" format 
+   -s "%Year-%Month-%Day" : Finds repositories with first commit before or on that day
+   -e "%Year-%Month-%Day" : Finds repositories with last commit after or on that day
 ```
 
+## Example Usage
+
+To find repositories that were edited after a certain date:
+
+```
+> gitfinder -e "2018-01-01"
+```
+
+To find repositories that have their first commit before a date:
+
+```
+> gitfinder -s "2017-10-02"
+```
+
+To find repoitories created and updated between a certain interval:
+
+```
+> gitfinder -s "2017-10-02" -e "2018-01-01"
+```
+
+To search for repositories with commit message "X":
+
+```
+> gitfinder -c "X"
+```
