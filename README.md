@@ -4,8 +4,6 @@ Gitfinder is a command-line utility that will allow you to search for git reposi
 is particularly useful if you opened a git repository a long time ago and forgot where you cloned it the last time.
 Gitfinder allows you to use different filters to locate your lost repository and start working on them.
 
-More features will be added as I further develop the program.
-
 ## How to install Gitfinder
 
 Gitfinder has only been tested on Linux and Mac setups so far. To use, clone the repository and then
