@@ -14,6 +14,7 @@ echo '' > /tmp/gitfinder_error
 check_commit(){
    if [[ $commit ]];
    then
+      check_and_move $1;
       all_logs=`git log --pretty=format:"%s" 2> /tmp/gitfinder_error`;
       show_errors "Error at ${repos[$i]}";
       all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /tmp/gitfinder_error`;
@@ -26,6 +27,7 @@ check_commit(){
       else
          ret_val=0;
       fi
+      cd $curr_dir;
    else
       ret_val=1;
    fi
@@ -34,9 +36,11 @@ check_commit(){
 check_end_date(){
    if [[ $end_date ]];
    then
+      check_and_move $1;
       repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | head -n 1 | cut -d" " -f1`;
       show_errors "Error at ${repos[$i]}";
       compare_dates $repo_last_edit_date $end_date;
+      cd $curr_dir;
    else
       ret_val=1;
    fi
@@ -45,9 +49,11 @@ check_end_date(){
 check_start_date(){
    if [[ $start_date ]];
    then
+      check_and_move $1;
       repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | tail -n 1 | cut -d" " -f1`;
       show_errors "Error at ${repos[$i]}";
       compare_dates $start_date $repo_last_edit_date;
+      cd $curr_dir;
    else
       ret_val=1;
    fi
@@ -101,7 +107,15 @@ compare_dates() {
 # Store current directory
 curr_dir=`pwd`;
 
+check_and_move() {
 
+   if [ ! -d "$1" ];
+   then
+      show_errors "Could not read $1";
+   fi
+   cd "$dirname";
+
+}
 # Function used for printing error statements
 show_errors() {
 
@@ -169,41 +183,31 @@ done
 # Array that will store all the repositories that are found
 results=();
 # Find all the folders that have a .git file or folder
-repos=( $(find . 2> /dev/null | egrep -E "\.git$") );
+repos=( $(find . 2> /dev/null | egrep -E "\.git$" | sed 's/ *//g' ) );
 
 # For every folder that has .git
 for ((i=0; i<${#repos[@]}; i++ ));
 do
    # Remove the .git at the end
    dirname="${repos[$i]}";
-   dirname=`echo "$dirname" | sed s/\.git$//g 2> /tmp/gitfinder_error`;
+   dirname=`echo "$dirname" | sed s/\.git$// 2> /tmp/gitfinder_error`;
    show_errors "Error at ${repos[$i]}";
-   # If dirname is not a directory, move to the next repository dir
-   if [ ! -d "$dirname" ];
-   then
-      continue;
-   fi
-   cd $dirname;
    add=1;
    # If commit flag is provided, look for required commit message
    # from the commit log
-   check_commit;
+   check_commit "$dirname";
    add=`expr $add \* $ret_val`;
 
-   check_end_date;
+   check_end_date "$dirname";
    if [[ $ret_val -lt 0 ]];
    then
       add=`expr $add \* 0`;
-   else
-      add=`expr $add \* 1`;
    fi
 
-   check_start_date;
+   check_start_date "$dirname";
    if [[ $ret_val -lt 0 ]];
    then
       add=`expr $add \* 0`;
-   else
-      add=`expr $add \* 1`;
    fi
 
    if [ $add -gt 0 ];
