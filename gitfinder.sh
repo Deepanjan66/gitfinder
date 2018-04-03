@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Variables that hold values obtained from the
 # arg flags
@@ -10,17 +10,48 @@ report=0;
 
 ret_val=0;
 echo '' > /tmp/gitfinder_error
+# Store current directory
+curr_dir=`pwd`;
+
+check_and_move() {
+
+   if [ ! -d "$1" ];
+   then
+      show_errors "Could not read $1";
+   else
+      cd $dirname;
+   fi
+
+}
+# Function used for printing error statements
+show_errors() {
+
+   if [ $? -ne 0 ];
+   then
+      echo "error code $1"; 
+      cd $curr_dir;
+      continue;
+   else
+      err=`cat /tmp/gitfinder_error`;
+      if [ ! -z "$err" ];
+      then
+         echo "$1 : $err";
+         echo '' > /tmp/gitfinder_error;
+         cd $curr_dir;
+         continue;
+      fi
+   fi
+}
 
 check_commit(){
    if [[ $commit ]];
    then
       check_and_move $1;
-      all_logs=`git log --pretty=format:"%s" 2> /tmp/gitfinder_error`;
-      show_errors "Error at ${repos[$i]}";
+      all_logs=`git --no-pager log --pretty=format:"%s" 2> /tmp/gitfinder_error`;
+      #show_errors "Error at commit ${repos[$i]}";
       all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /tmp/gitfinder_error`;
-      show_errors "Error at ${repos[$i]}";
-   
-      if echo "$all_logs" | grep -Eiq $commit ;
+      show_errors "Error getting commit in ${repos[$i]}";
+      if echo "$all_logs" | grep -Eiq "$commit" ;
       then
          ret_val=1;
          #results+=(${repos[i]}); 
@@ -37,7 +68,7 @@ check_end_date(){
    if [[ $end_date ]];
    then
       check_and_move $1;
-      repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | head -n 1 | cut -d" " -f1`;
+      repo_last_edit_date=`git log --no-pager --pretty=format:"%ai" 2> /tmp/gitfinder_error | head -n 1 | cut -d" " -f1`;
       show_errors "Error at ${repos[$i]}";
       compare_dates $repo_last_edit_date $end_date;
       cd $curr_dir;
@@ -50,7 +81,7 @@ check_start_date(){
    if [[ $start_date ]];
    then
       check_and_move $1;
-      repo_last_edit_date=`git log --pretty=format:"%ai" 2> /tmp/gitfinder_error | tail -n 1 | cut -d" " -f1`;
+      repo_last_edit_date=`git --no-pager log --pretty=format:"%ai" 2> /tmp/gitfinder_error | tail -n 1 | cut -d" " -f1`;
       show_errors "Error at ${repos[$i]}";
       compare_dates $start_date $repo_last_edit_date;
       cd $curr_dir;
@@ -104,35 +135,6 @@ compare_dates() {
    fi
 }
 
-# Store current directory
-curr_dir=`pwd`;
-
-check_and_move() {
-
-   if [ ! -d "$1" ];
-   then
-      show_errors "Could not read $1";
-   fi
-   cd "$dirname";
-
-}
-# Function used for printing error statements
-show_errors() {
-
-   if [ $? -ne 0 ];
-   then
-      echo "$1"; 
-      continue;
-   else
-      err=`cat /tmp/gitfinder_error`;
-      if [ ! -z "$err" ];
-      then
-         echo "$1 : $err";
-         echo '' > /tmp/gitfinder_error;
-         continue;
-      fi
-   fi
-}
 
 # For all arguments in the arg list
 while [[ $# -gt 0 ]];
@@ -190,7 +192,7 @@ for ((i=0; i<${#repos[@]}; i++ ));
 do
    # Remove the .git at the end
    dirname="${repos[$i]}";
-   dirname=`echo "$dirname" | sed s/\.git$// 2> /tmp/gitfinder_error`;
+   dirname=`echo "$dirname" | sed 's/\.git$//' 2> /tmp/gitfinder_error`;
    show_errors "Error at ${repos[$i]}";
    add=1;
    # If commit flag is provided, look for required commit message
