@@ -28,7 +28,7 @@ show_errors() {
 
    if [ $? -ne 0 ];
    then
-      echo "error code $1"; 
+      echo "$1"; 
       cd $curr_dir;
       continue;
    else
@@ -47,7 +47,7 @@ check_commit(){
    if [[ $commit ]];
    then
       check_and_move $1;
-      all_logs=`git --no-pager log --pretty=format:"%s" 2> /tmp/gitfinder_error`;
+      all_logs=`git --no-pager log --pretty=format:"%s" 2> /tmp/gitfinder_error | iconv -f ISO-8859-1`;
       #show_errors "Error at commit ${repos[$i]}";
       all_logs=`echo "$all_logs" | sed 's/\n/ /g' 2> /tmp/gitfinder_error`;
       show_errors "Error getting commit in ${repos[$i]}";
