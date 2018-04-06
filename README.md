@@ -60,3 +60,7 @@ To search for repositories with commit message "X":
 ```
 > gitfinder -c "X"
 ```
+
+## Posting issues
+
+I've noticed quite a few OS dependent issue so far. I've fixed most of the ones that I am aware of but if you find other problems, please feel free to post an issue. The community support would be much appreciated.
