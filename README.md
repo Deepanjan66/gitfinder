@@ -63,4 +63,4 @@ To search for repositories with commit message "X":
 
 ## Posting issues
 
-I've noticed quite a few OS dependent issues so far. I've tried to fix most of the ones that I am aware of but if you find other problems, please feel free to post an issue here. The community's support would be much appreciated.
+I've noticed quite a few OS dependent issues so far. I've tried to fix most of the ones that I am aware of but if you find other problems, please feel free to post an issue here. The community's support would be much appreciated. Thank you!
